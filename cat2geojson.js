@@ -7,10 +7,10 @@ const
 // parse options with minimist
 // https://github.com/substack/minimist
 var opts = {
-  string: [ 'limit' ],
+  string: [ 'limit', 'output' ],
   boolean: [ 'help', 'debug' ],
   default: { 'limit': 0 },
-  alias: { h: 'help', d: 'debug' },
+  alias: { l: 'limit', o: 'output', h: 'help', d: 'debug' },
   unknown: unknownArg,
 };
 
@@ -30,6 +30,7 @@ if (argv._.length > 1) {
 // unpack opts for convenience
 var debug = argv.debug;
 var limit = argv.limit;
+var output = argv.output;
 var filename = argv._[0];
 
 if (debug) {
@@ -45,7 +46,6 @@ var rows = text.split("\n");
 // all the features in memory and then serializes them all at once into a valid
 // GeoJSON document.
 var features = [];
-var output = 0;
 for (var n = 0; n < rows.length; n++) {
   // cols are white space separated
   var cols = rows[n].split(/\s+/);
@@ -59,8 +59,7 @@ for (var n = 0; n < rows.length; n++) {
   features.push(geo);
 
   // check output limit
-  output++;
-  if (output == limit) {
+  if (features.length == limit) {
     break;
   }
 }
@@ -71,7 +70,12 @@ var geojson = {
 };
 
 // serialize GeoJSON features
-process.stdout.write(JSON.stringify(geojson));
+var doc = JSON.stringify(geojson);
+if (output) {
+  fs.writeFileSync(output, doc);
+} else {
+  process.stdout.write(doc);
+}
 
 process.exit(0);
 
@@ -88,7 +92,7 @@ function unknownArg(arg) {
 
 function exitUsage() {
   console.log("Usage:\n");
-  console.log('  ' + basename(process.argv[1]) + ' [--limit <n>] <filename>');
+  console.log('  ' + basename(process.argv[1]) + ' [-l|--limit <n>] [-o|--output <filename>] <filename>');
   console.log('  ' + basename(process.argv[1]) + ' [-d|--debug] ...');
   console.log('  ' + basename(process.argv[1]) + ' [-h|--help]');
   process.exit(1);
