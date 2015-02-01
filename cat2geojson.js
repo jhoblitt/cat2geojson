@@ -75,6 +75,11 @@ for (var n = 0; n < rows.length; n++) {
   }
 }
 
+if (! features.length) {
+  process.stdout.write("no GeoJSON Features to output\n");
+  process.exit(0);
+}
+
 var geojson = {
   "type": "FeatureCollection",
   "features": features,
