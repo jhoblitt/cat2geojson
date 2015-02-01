@@ -41,6 +41,8 @@ if (debug) {
 
 // input <filename> is ASCII with newline separated rows
 var text = fs.readFileSync(filename).toString();
+// chomp trailing newline(s)
+text = text.replace(/\n+$/, '');
 var rows = text.split("\n");
 
 // Each "feature" we're extracting from the catalog needs to be 
