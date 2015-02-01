@@ -100,11 +100,13 @@ function unknownArg(arg) {
 }
 
 function exitUsage() {
+  var pname = basename(process.argv[1]);
+
   process.stderr.write("Usage:\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [--minmag <n>] [--maxmag <n>] ...\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-d|--debug] ...\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-h|--help]\n");
+  process.stderr.write('  ' + pname + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
+  process.stderr.write('  ' + pname + " [--minmag <n>] [--maxmag <n>] ...\n");
+  process.stderr.write('  ' + pname + " [-d|--debug] ...\n");
+  process.stderr.write('  ' + pname + " [-h|--help]\n");
   process.exit(1);
 }
 
