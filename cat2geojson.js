@@ -51,11 +51,11 @@ var rows = text.split("\n");
 // GeoJSON document.
 var features = [];
 for (var n = 0; n < rows.length; n++) {
-  // cols are white space separated
-  var cols = rows[n].split(/\s+/);
-
   // convert cols array into a simple object so cols can be looked up by name
-  var obj = colsToObject(cols);
+  var obj = rowToObject(rows[n]);
+  if (!obj) {
+    continue;
+  }
 
   if (minmag !== 0 && obj.mag <= minmag) {
     continue;
@@ -117,15 +117,19 @@ function basename(path) {
   return path.split(/[\\/]/).pop();
 }
 
-function colsToObject(cols) {
+function rowToObject(row) {
   // catolog format
   // ID                             RA          DEC         MAG     MAG-ERROR
   // CFHTLS-D-R-J221427.59-181425.4 333.6149701 -18.2403893 13.7879 0.0000
 
+  // cols are white space separated
+  var cols = row.split(/\s+/);
+
   // ignore rows with too few columns
   // any additional columns are silently ignored
   if (cols.length != 5) {
-    process.stderr.write("ERROR: invalid column --" + cols + "\n");
+    process.stderr.write("ERROR: invalid column format --" + row + "\n");
+    return false;
   }
 
   var obj = {
