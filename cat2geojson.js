@@ -41,6 +41,8 @@ if (debug) {
 
 // input <filename> is ASCII with newline separated rows
 var text = fs.readFileSync(filename).toString();
+// chomp trailing newline(s)
+text = text.replace(/\n+$/, '');
 var rows = text.split("\n");
 
 // Each "feature" we're extracting from the catalog needs to be 
@@ -49,11 +51,11 @@ var rows = text.split("\n");
 // GeoJSON document.
 var features = [];
 for (var n = 0; n < rows.length; n++) {
-  // cols are white space separated
-  var cols = rows[n].split(/\s+/);
-
   // convert cols array into a simple object so cols can be looked up by name
-  var obj = colsToObject(cols);
+  var obj = rowToObject(rows[n]);
+  if (!obj) {
+    continue;
+  }
 
   if (minmag !== 0 && obj.mag <= minmag) {
     continue;
@@ -71,6 +73,11 @@ for (var n = 0; n < rows.length; n++) {
   if (features.length == limit) {
     break;
   }
+}
+
+if (! features.length) {
+  process.stdout.write("no GeoJSON Features to output\n");
+  process.exit(0);
 }
 
 var geojson = {
@@ -100,11 +107,13 @@ function unknownArg(arg) {
 }
 
 function exitUsage() {
+  var pname = basename(process.argv[1]);
+
   process.stderr.write("Usage:\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [--minmag <n>] [--maxmag <n>] ...\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-d|--debug] ...\n");
-  process.stderr.write('  ' + basename(process.argv[1]) + " [-h|--help]\n");
+  process.stderr.write('  ' + pname + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
+  process.stderr.write('  ' + pname + " [--minmag <n>] [--maxmag <n>] ...\n");
+  process.stderr.write('  ' + pname + " [-d|--debug] ...\n");
+  process.stderr.write('  ' + pname + " [-h|--help]\n");
   process.exit(1);
 }
 
@@ -113,15 +122,19 @@ function basename(path) {
   return path.split(/[\\/]/).pop();
 }
 
-function colsToObject(cols) {
+function rowToObject(row) {
   // catolog format
   // ID                             RA          DEC         MAG     MAG-ERROR
   // CFHTLS-D-R-J221427.59-181425.4 333.6149701 -18.2403893 13.7879 0.0000
 
+  // cols are white space separated
+  var cols = row.split(/\s+/);
+
   // ignore rows with too few columns
   // any additional columns are silently ignored
   if (cols.length != 5) {
-    process.stderr.write("ERROR: invalid column --" + cols + "\n");
+    process.stderr.write("ERROR: invalid column format --" + row + "\n");
+    return false;
   }
 
   var obj = {
