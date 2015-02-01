@@ -32,3 +32,7 @@ maximum of 10 objects.
 
     wget https://s3.amazonaws.com/lsst-epo/testdata/D4.R.cat
     ./cat2geojson.js D4.R.cat --maxmag 14 --limit 10 --output d4.json
+
+#### Set CRS
+
+    ./cat2geojson.js D4.R.cat --maxmag 14 --limit 10 --crs urn:ogc:def:crs:d4 -o d4.json

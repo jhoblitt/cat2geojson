@@ -7,7 +7,7 @@ const
 // parse options with minimist
 // https://github.com/substack/minimist
 var opts = {
-  string: [ 'limit', 'output', 'minmag', 'maxmag' ],
+  string: [ 'limit', 'output', 'minmag', 'maxmag', 'crs' ],
   boolean: [ 'help', 'debug' ],
   default: { limit: 0, minmag: 0, maxmag: 0 },
   alias: { l: 'limit', o: 'output', h: 'help', d: 'debug' },
@@ -33,6 +33,7 @@ var limit = argv.limit;
 var output = argv.output;
 var minmag = argv.minmag;
 var maxmag = argv.maxmag;
+var crs = argv.crs;
 var filename = argv._[0];
 
 if (debug) {
@@ -149,7 +150,7 @@ function rowToObject(row) {
 }
 
 function objectToGeoJSON(obj) {
-  return {
+  var geo = {
     "type": "Feature",
     "properties": {
       "name": obj.id,
@@ -157,7 +158,20 @@ function objectToGeoJSON(obj) {
     },
     "geometry": {
       "type": "Point",
-      "coordinates": [obj.dec, obj.ra],
-    }
+      // per the GeoJSON spec, coordinates are in longitude, latitude order
+      // http://geojson.org/geojson-spec.html#positions
+      "coordinates": [obj.ra, obj.dec],
+    },
   };
+
+  if (crs) {
+    geo.crs = {
+      "type": "name",
+      "properties": {
+        "name": crs,
+      }
+    };
+  }
+
+  return geo;
 }
