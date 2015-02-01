@@ -7,9 +7,9 @@ const
 // parse options with minimist
 // https://github.com/substack/minimist
 var opts = {
-  string: [ 'limit', 'output' ],
+  string: [ 'limit', 'output', 'minmag', 'maxmag' ],
   boolean: [ 'help', 'debug' ],
-  default: { 'limit': 0 },
+  default: { limit: 0, minmag: 0, maxmag: 0 },
   alias: { l: 'limit', o: 'output', h: 'help', d: 'debug' },
   unknown: unknownArg,
 };
@@ -31,6 +31,8 @@ if (argv._.length > 1) {
 var debug = argv.debug;
 var limit = argv.limit;
 var output = argv.output;
+var minmag = argv.minmag;
+var maxmag = argv.maxmag;
 var filename = argv._[0];
 
 if (debug) {
@@ -52,6 +54,13 @@ for (var n = 0; n < rows.length; n++) {
 
   // convert cols array into a simple object so cols can be looked up by name
   var obj = colsToObject(cols);
+
+  if (minmag !== 0 && obj.mag <= minmag) {
+    continue;
+  }
+  if (maxmag !== 0 && obj.mag >= maxmag) {
+    continue;
+  }
 
   // convert cols obj into an object representing a GeoJSON "Feature"
   var geo = objectToGeoJSON(obj);
@@ -93,6 +102,7 @@ function unknownArg(arg) {
 function exitUsage() {
   process.stderr.write("Usage:\n");
   process.stderr.write('  ' + basename(process.argv[1]) + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
+  process.stderr.write('  ' + basename(process.argv[1]) + " [--minmag <n>] [--maxmag <n>] ...\n");
   process.stderr.write('  ' + basename(process.argv[1]) + " [-d|--debug] ...\n");
   process.stderr.write('  ' + basename(process.argv[1]) + " [-h|--help]\n");
   process.exit(1);
