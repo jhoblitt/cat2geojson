@@ -157,7 +157,9 @@ function objectToGeoJSON(obj) {
     },
     "geometry": {
       "type": "Point",
-      "coordinates": [obj.dec, obj.ra],
-    }
+      // per the GeoJSON spec, coordinates are in longitude, latitude order
+      // http://geojson.org/geojson-spec.html#positions
+      "coordinates": [obj.ra, obj.dec],
+    },
   };
 }
