@@ -19,11 +19,11 @@ if (argv.help) {
   exitUsage();
 }
 if (argv._.length === 0) {
-  console.log('<filename> is required');
+  process.stderr.write("<filename> is required\n");
   exitUsage();
 }
 if (argv._.length > 1) {
-  console.log('Only one <filename> argument is allowed');
+  process.stderr.write("Only one <filename> argument is allowed\n");
   exitUsage();
 }
 
@@ -83,7 +83,7 @@ function unknownArg(arg) {
   // die if the unknown option starts with -
   // otherwise, treat it as a filename arg and add it to argv._
   if (arg.match(/^-+/)) {
-    console.log('unknown option: ' + arg + "\n");
+    process.stderr.write('unknown option: ' + arg + "\n");
     exitUsage();
   }
 
@@ -91,10 +91,10 @@ function unknownArg(arg) {
 }
 
 function exitUsage() {
-  console.log("Usage:\n");
-  console.log('  ' + basename(process.argv[1]) + ' [-l|--limit <n>] [-o|--output <filename>] <filename>');
-  console.log('  ' + basename(process.argv[1]) + ' [-d|--debug] ...');
-  console.log('  ' + basename(process.argv[1]) + ' [-h|--help]');
+  process.stderr.write("Usage:\n");
+  process.stderr.write('  ' + basename(process.argv[1]) + " [-l|--limit <n>] [-o|--output <filename>] <filename>\n");
+  process.stderr.write('  ' + basename(process.argv[1]) + " [-d|--debug] ...\n");
+  process.stderr.write('  ' + basename(process.argv[1]) + " [-h|--help]\n");
   process.exit(1);
 }
 
