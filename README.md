@@ -27,7 +27,7 @@ Usage
 
 ### Example
 
-Filter catalog for objections with a magnitude <= 14 and limit the output to a
+Filter catalog for objects with a magnitude <= 14 and limit the output to a
 maximum of 10 objects.
 
     wget https://s3.amazonaws.com/lsst-epo/testdata/D4.R.cat
