@@ -86,7 +86,19 @@ var geojson = {
   "features": features,
 };
 
-// serialize GeoJSON features
+// per the GeoJSON spec, the crs should be on the top level object, ie., the
+// FeatureCollection
+// http://geojson.org/geojson-spec.html#coordinate-reference-system-objects
+if (crs) {
+  geojson.crs = {
+    "type": "name",
+    "properties": {
+      "name": crs,
+    }
+  };
+}
+
+// serialize GeoJSON
 var doc = JSON.stringify(geojson);
 if (output) {
   fs.writeFileSync(output, doc);
@@ -163,15 +175,6 @@ function objectToGeoJSON(obj) {
       "coordinates": [obj.ra, obj.dec],
     },
   };
-
-  if (crs) {
-    geo.crs = {
-      "type": "name",
-      "properties": {
-        "name": crs,
-      }
-    };
-  }
 
   return geo;
 }
